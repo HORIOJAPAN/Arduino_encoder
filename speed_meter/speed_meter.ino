@@ -20,7 +20,7 @@ LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 #define tire 1770 //タイヤの周径
 #define patarn 72   //光学式エンコーダーの分解能（分割数）
-#define speed_frequency 10  //1秒当たりの速度更新回数
+#define speed_frequency 2  //1秒当たりの速度更新回数
 
 
 String strData1;
@@ -169,7 +169,7 @@ void loop(){
   if((now_time - before_time) >= (1000/speed_frequency))
   {
     wheel_speed_left = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
-    wheel_speed_right = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
+    wheel_speed_right = (((cnt_right/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
 
     strData1 = String("L:");
     strData1 += String(wheel_speed_left,1);
