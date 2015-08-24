@@ -4,7 +4,7 @@
 
 #include <LiquidCrystal.h>
 
-LiquidCrystal lcd(11, 12, 7, 8, 9, 10);
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 #define DI_WHEEL_LEFT_A 2
 #define DI_WHEEL_LEFT_B 3
@@ -21,9 +21,10 @@ LiquidCrystal lcd(11, 12, 7, 8, 9, 10);
 #define tire 1770 //タイヤの周径
 #define patarn 72   //光学式エンコーダーの分解能（分割数）
 #define speed_frequency 10  //1秒当たりの速度更新回数
-#define CH 0  //左の速度を取るとき
-//#define CH 1  //右の速度を取るとき
 
+
+String strData1;
+String strData2;
 
 long cnt_left, cnt_right;
 
@@ -32,7 +33,7 @@ long cnt_left, cnt_right;
 
 
 long now_time, before_time;
-double wheel_speed ;
+double wheel_speed_left,wheel_speed_right;
 
 
 String strData;
@@ -49,10 +50,10 @@ int wheelState, prevState, prevLeft, prevRight;
 
 void setup() {
 
-  lcd.begin(16, 2);           /* LCDの設定(16文字2行) */
+  lcd.begin(8, 2);           /* LCDの設定(16文字2行) */
   lcd.clear();                /* LCDのクリア */
   lcd.setCursor(0, 0);        /* 0列0行から表示する */
-  lcd.print("LCD CHECK"); /* 文字列の表示 */
+  lcd.print("CHECK"); /* 文字列の表示 */
   delay(1000);
   lcd.clear();                /* LCDのクリア */
   
@@ -165,31 +166,25 @@ void loop(){
  } 
 
 //速度計算・出力
-  if(CH==0 && (now_time - before_time) >= (1000/speed_frequency))
+  if((now_time - before_time) >= (1000/speed_frequency))
   {
-    wheel_speed = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
+    wheel_speed_left = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
+    wheel_speed_right = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
     cnt_left = 0;
-    lcd.setCursor(0,0);
-    lcd.print(wheel_speed,2);
-    lcd.print("km/h");
+    cnt_right = 0;  
+    strData1 = String("L:");
+    strData1 += String(wheel_speed_left,2);
+    strData2 = String("R:");
+    strData2 += String(wheel_speed_right,2);
     lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(strData1);
+    lcd.setCursor(1,0);
+    lcd.print(strData2);
     //Serial.println(wheel_speed,2);
     before_time = now_time;
   }
-  
-  if(CH==1 && (now_time - before_time) >= (1000/speed_frequency))
-  {
-    wheel_speed = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
-    cnt_right = 0;
-    lcd.setCursor(0,0);
-    lcd.print(wheel_speed);
-    lcd.print("km/h");
-    lcd.clear();
-    //Serial.println(wheel_speed,2);
-    before_time = now_time;
-    //Serial.println(wheel_speed,2);
-    before_time = now_time;
-  }
-
 }
+  
+
 
