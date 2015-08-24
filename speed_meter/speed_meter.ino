@@ -170,19 +170,24 @@ void loop(){
   {
     wheel_speed_left = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
     wheel_speed_right = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
-    cnt_left = 0;
-    cnt_right = 0;  
+
     strData1 = String("L:");
-    strData1 += String(wheel_speed_left,2);
+    strData1 += String(wheel_speed_left,1);
+    strData1 += String(":");
+    strData1 += String(cnt_left);
     strData2 = String("R:");
-    strData2 += String(wheel_speed_right,2);
+    strData2 += String(wheel_speed_right,1);
+    strData2 += String(":");
+    strData2 += String(cnt_right);
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(strData1);
-    lcd.setCursor(1,0);
+    lcd.setCursor(0,1);
     lcd.print(strData2);
     //Serial.println(wheel_speed,2);
     before_time = now_time;
+    cnt_left = 0;
+    cnt_right = 0;  
   }
 }
   
