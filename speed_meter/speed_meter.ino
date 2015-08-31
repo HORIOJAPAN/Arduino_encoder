@@ -1,6 +1,6 @@
 //速度計測プログラム
 //wheel_speedにタイヤの速度（km/h）で記録
-//表示についてはまだ未設定
+
 
 #include <LiquidCrystal.h>
 
@@ -168,17 +168,17 @@ void loop(){
 //速度計算・出力
   if((now_time - before_time) >= (1000/speed_frequency))
   {
-    wheel_speed_left = (((cnt_left/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
-    wheel_speed_right = (((cnt_right/patarn) * tire)/((now_time - before_time)/1000)) * 3600 / 1000000;
+    wheel_speed_left = ((cnt_left/patarn) * tire)/((now_time - before_time)/1000);
+    wheel_speed_right = ((cnt_right/patarn) * tire)/((now_time - before_time)/1000);
+  //スピード計算
+  //v=（（cnt/タイヤの分解能）*タイヤの周径[mm]）/(測定時間[ms]/1000)）
 
     strData1 = String("L:");
     strData1 += String(wheel_speed_left,1);
-    strData1 += String(":");
-    strData1 += String(cnt_left);
+    strData1 += String("mm/s");
     strData2 = String("R:");
     strData2 += String(wheel_speed_right,1);
-    strData2 += String(":");
-    strData2 += String(cnt_right);
+    strData2 += String("mm/s");
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(strData1);
