@@ -1,5 +1,5 @@
 //速度計測プログラム
-//wheel_speedにタイヤの速度（km/h）で記録
+//wheel_speedにタイヤの速度（m/s）で記録
 
 
 #include <LiquidCrystal.h>
@@ -19,7 +19,7 @@ LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 #define AI_ROTARY_ENCODER_R A1
 
 #define tire 1770 //タイヤの周径
-#define patarn 72   //光学式エンコーダーの分解能（分割数）
+#define patarn 72  //光学式エンコーダーの分解能（分割数）
 #define speed_frequency 2  //1秒当たりの速度更新回数
 
 
@@ -33,7 +33,7 @@ long cnt_left, cnt_right;
 
 
 long now_time, before_time;
-double wheel_speed_left,wheel_speed_right;
+int wheel_speed_left,wheel_speed_right,wheel_speed;
 
 
 String strData;
@@ -168,17 +168,20 @@ void loop(){
 //速度計算・出力
   if((now_time - before_time) >= (1000/speed_frequency))
   {
-    wheel_speed_left = ((cnt_left/patarn) * tire)/((now_time - before_time)/1000);
-    wheel_speed_right = ((cnt_right/patarn) * tire)/((now_time - before_time)/1000);
+    wheel_speed_left = (((float)cnt_left/patarn) * tire)/(((float)now_time - (float)before_time)/1000);
+    wheel_speed_right = (((float)cnt_right/patarn) * tire)/(((float)now_time - (float)before_time)/1000);
   //スピード計算
-  //v=（（cnt/タイヤの分解能）*タイヤの周径[mm]）/(測定時間[ms]/1000)）
+  //v=（（cnt/タイヤの分解能）*タイヤの周径[mm]）/(測定時間[ms]/1000)） 
+    wheel_speed = (wheel_speed_left + wheel_speed_righ) / 2;
 
-    strData1 = String("L:");
+    strData1 = "L:";
     strData1 += String(wheel_speed_left,1);
-    strData1 += String("mm/s");
-    strData2 = String("R:");
+    //strData1 += String("km/h");
+    strData2 = "R:";
     strData2 += String(wheel_speed_right,1);
-    strData2 += String("mm/s");
+    //strData2 += String("km/h");
+  
+    Serial.println(wheel_speed_right);
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(strData1);
@@ -189,6 +192,7 @@ void loop(){
     cnt_left = 0;
     cnt_right = 0;  
   }
+  
 }
   
 
