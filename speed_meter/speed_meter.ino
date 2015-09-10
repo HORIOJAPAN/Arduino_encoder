@@ -1,5 +1,5 @@
 //速度計測プログラム
-//wheel_speedにタイヤの速度（m/s）で記録
+
 
 
 #include <LiquidCrystal.h>
@@ -22,6 +22,10 @@ LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 #define patarn 72  //光学式エンコーダーの分解能（分割数）
 #define speed_frequency 2  //1秒当たりの速度更新回数
 
+#define bet_wheel 535
+
+#define pai 3.14159265359
+
 
 String strData1;
 String strData2;
@@ -33,7 +37,10 @@ long cnt_left, cnt_right;
 
 
 long now_time, before_time;
-int wheel_speed_left,wheel_speed_right,wheel_speed;
+double left_dist,right_dist;  //片輪の移動距離
+double wheel_speed_left,wheel_speed_right,wheel_speed;  //片輪の速度/中心の速度
+double wheel_rotation;  //回転角
+double rotation_radius; //回転半径
 
 
 String strData;
@@ -50,7 +57,7 @@ int wheelState, prevState, prevLeft, prevRight;
 
 void setup() {
 
-  lcd.begin(8, 2);           /* LCDの設定(16文字2行) */
+  lcd.begin(8, 2);           /* LCDの設定(8文字2行) */
   lcd.clear();                /* LCDのクリア */
   lcd.setCursor(0, 0);        /* 0列0行から表示する */
   lcd.print("CHECK"); /* 文字列の表示 */
@@ -75,6 +82,7 @@ void setup() {
   
   wheelState &= digitalRead(DI_WHEEL_LEFT_A) | digitalRead(DI_WHEEL_LEFT_B)<<1;
   prevState = wheelState;
+  wheel_rotation = 0;
   
   Serial.begin(9600);
 }
@@ -167,27 +175,53 @@ void loop(){
 
 //速度計算・出力
   if((now_time - before_time) >= (1000/speed_frequency))
-  {
-    wheel_speed_left = (((float)cnt_left/patarn) * tire)/(((float)now_time - (float)before_time)/1000);
-    wheel_speed_right = (((float)cnt_right/patarn) * tire)/(((float)now_time - (float)before_time)/1000);
-  //スピード計算
-  //v=（（cnt/タイヤの分解能）*タイヤの周径[mm]）/(測定時間[ms]/1000)） 
-    wheel_speed = (wheel_speed_left + wheel_speed_righ) / 2;
+  { 
+    left_dist = ((float)cnt_left/patarn) * tire;
+    right_dist = ((float)cnt_right/patarn) * tire;
+    
+    //スピード計算
+    //v=（（cnt/タイヤの分解能）*タイヤの周径[mm]）/(測定時間[ms]/1000)） [mm/sec]
+    wheel_speed_left = left_dist /(((float)now_time - (float)before_time)/1000);
+    wheel_speed_right = right_dist /(((float)now_time - (float)before_time)/1000);
 
-    strData1 = "L:";
-    strData1 += String(wheel_speed_left,1);
-    //strData1 += String("km/h");
-    strData2 = "R:";
-    strData2 += String(wheel_speed_right,1);
-    //strData2 += String("km/h");
+    //中心の速度[mm/sec]
+    wheel_speed = (wheel_speed_left + wheel_speed_right) / 2;
+
+
+    //回転角を求める[rad]
+    //回転半径を求める[mm]
+    if(left_dist > right_dist)
+    {
+      wheel_rotation = wheel_rotation + ((left_dist - right_dist) / bet_wheel);
+      rotation_radius = (bet_wheel/2) + ((right_dist * bet_wheel)/(left_dist - right_dist));
+    }
+    else if(right_dist > left_dist)
+    {
+      wheel_rotation = wheel_rotation -((right_dist - left_dist) / bet_wheel);
+      rotation_radius = (bet_wheel/2) + ((left_dist * bet_wheel)/(right_dist - left_dist));
+    }
+    else
+    {
+      rotation_radius = 0;
+    }
+
+        
   
-    Serial.println(wheel_speed_right);
+    Serial.print(wheel_speed * 3600/1000000,2);
+    Serial.println(" km/h");
+    Serial.print(wheel_rotation * 360 / (2 * pai),0);
+    Serial.print("deg  ");
+    Serial.print(rotation_radius/1000 ,1);
+    Serial.println("m");
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print(strData1);
+    lcd.print(wheel_speed * 3600/1000000,2);
+    lcd.setCursor(4,0);
+    lcd.print("km/h");
     lcd.setCursor(0,1);
-    lcd.print(strData2);
-    //Serial.println(wheel_speed,2);
+    lcd.print(wheel_rotation * 360/(2*pai),0);
+    lcd.setCursor(5,1);
+    lcd.print(rotation_radius/1000,1);
     before_time = now_time;
     cnt_left = 0;
     cnt_right = 0;  
