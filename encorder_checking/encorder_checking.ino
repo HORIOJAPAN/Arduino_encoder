@@ -1,10 +1,14 @@
 //光学式エンコーダーの元のプログラム
 //左右の値を積算していき表示する
 
-#define DI_WHEEL_LEFT_A 2
-#define DI_WHEEL_LEFT_B 3
-#define DI_WHEEL_RIGHT_A 4
-#define DI_WHEEL_RIGHT_B 5
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+
+#define DI_WHEEL_LEFT_A 14
+#define DI_WHEEL_LEFT_B 15
+#define DI_WHEEL_RIGHT_A 16
+#define DI_WHEEL_RIGHT_B 17
 #define DI_BTN_ZERO_CLEAR 6
 
 #define DO_LED_STAT 13
@@ -30,6 +34,14 @@ int wheelState, prevState, prevLeft, prevRight;
 #define ST_WHL_RIGHT 0x0c
 
 void setup() {
+
+  lcd.begin(8, 2);           /* LCDの設定(8文字2行) */
+  lcd.clear();                /* LCDのクリア */
+  lcd.setCursor(0, 0);        /* 0列0行から表示する */
+  lcd.print("CHECK");         /* 文字列の表示 */
+  delay(1000);
+  lcd.clear();                /* LCDのクリア */
+  
   pinMode(DO_LED_STAT, OUTPUT);  
   pinMode(DO_LED_ERR, OUTPUT);  
 
@@ -152,6 +164,15 @@ if (cnt_left != left_before || cnt_right != right_before ){
 //    strData += ",";
 //    strData += String(enc_right);
     Serial.println(strData);
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("L:");
+    lcd.setCursor(3,0);
+    lcd.print(cnt_left);
+    lcd.setCursor(0,1);
+    lcd.print("R:");
+    lcd.setCursor(3,1);
+    lcd.print(cnt_right);
     left_before = cnt_left;
     right_before = cnt_right;
   }

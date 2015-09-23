@@ -1,4 +1,7 @@
 //PCからのリクエストに対し前回の送信からの積算距離を送る
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(7,8,9,10,11,12);
 
 #define DI_WHEEL_LEFT_A 14
 #define DI_WHEEL_LEFT_B 15
@@ -10,7 +13,7 @@
 #define DO_LED_ERR 12
 
 #define SWITCH_CHECK 3
-#define SWITCH_SPEED 4
+
 
 #define tire 1770 //タイヤの周径
 #define patarn 72  //光学式エンコーダーの分解能（分割数）
@@ -27,7 +30,11 @@ int ret;
 // int tm_serial_out;
 #define TIMEOUT 1000
 
-
+long now_time, before_time;
+double left_dist,right_dist,dist,odo;  //片輪の移動距離
+double wheel_speed_left,wheel_speed_right,wheel_speed;  //片輪の速度/中心の速度
+double wheel_rotation;  //回転角
+double rotation_radius; //回転半径
 
 String strData;
 
@@ -42,6 +49,13 @@ int wheelState, prevState, prevLeft, prevRight;
 
 void setup() {
 
+  lcd.begin(8, 2);           /* LCDの設定(8文字2行) */
+  lcd.clear();                /* LCDのクリア */
+  lcd.setCursor(0, 0);        /* 0列0行から表示する */
+  lcd.print("START"); /* 文字列の表示 */
+  delay(1000);
+  lcd.clear();                /* LCDのクリア */
+  
   pinMode(DO_LED_STAT, OUTPUT);  
   pinMode(DO_LED_ERR, OUTPUT);  
 
@@ -51,7 +65,7 @@ void setup() {
   pinMode(DI_WHEEL_RIGHT_B, INPUT);
 
   pinMode(SWITCH_CHECK,INPUT);
-  pinMode(SWITCH_SPEED,INPUT);
+
   
  // pinMode(AI_ROTARY_ENCODER_L, INPUT);
  //pinMode(AI_ROTARY_ENCODER_R, INPUT);
@@ -162,6 +176,21 @@ void loop(){
     cnt_left = 0;
     cnt_right = 0;
   }
+
+if(digitalRead(SWITCH_CHECK) == HIGH){
+    
+    lcd.setCursor(0,0);
+    lcd.print(analogRead(0));
+    lcd.setCursor(4,0);
+    lcd.print(analogRead(1));
+    lcd.setCursor(0,1);
+    lcd.print(analogRead(2));
+    lcd.setCursor(4,1);
+    lcd.print(analogRead(3));
+    delay(200);   
+    lcd.clear();
+  }
+
 
   // LED
   if (wheelState& (ST_WHL_LA|ST_WHL_RA)) {     

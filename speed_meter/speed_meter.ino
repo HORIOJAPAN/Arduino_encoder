@@ -6,11 +6,11 @@
 
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
-#define DI_WHEEL_LEFT_A 2
-#define DI_WHEEL_LEFT_B 3
-#define DI_WHEEL_RIGHT_A 4
-#define DI_WHEEL_RIGHT_B 5
-#define DI_BTN_ZERO_CLEAR 6
+#define DI_WHEEL_LEFT_A 14
+#define DI_WHEEL_LEFT_B 15
+#define DI_WHEEL_RIGHT_A 16
+#define DI_WHEEL_RIGHT_B 17
+#define DI_BTN_ZERO_CLEAR 18
 
 #define DO_LED_STAT 13
 #define DO_LED_ERR 12
@@ -20,7 +20,7 @@ LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
 #define tire 1770 //タイヤの周径
 #define patarn 72  //光学式エンコーダーの分解能（分割数）
-#define speed_frequency 2  //1秒当たりの速度更新回数
+#define speed_frequency 5 //1秒当たりの速度更新回数
 
 #define bet_wheel 535
 
@@ -37,7 +37,7 @@ long cnt_left, cnt_right;
 
 
 long now_time, before_time;
-double left_dist,right_dist;  //片輪の移動距離
+double left_dist,right_dist,dist,odo;  //片輪の移動距離
 double wheel_speed_left,wheel_speed_right,wheel_speed;  //片輪の速度/中心の速度
 double wheel_rotation;  //回転角
 double rotation_radius; //回転半径
@@ -83,6 +83,7 @@ void setup() {
   wheelState &= digitalRead(DI_WHEEL_LEFT_A) | digitalRead(DI_WHEEL_LEFT_B)<<1;
   prevState = wheelState;
   wheel_rotation = 0;
+  odo = 0;
   
   Serial.begin(9600);
 }
@@ -187,7 +188,9 @@ void loop(){
     //中心の速度[mm/sec]
     wheel_speed = (wheel_speed_left + wheel_speed_right) / 2;
 
-
+    //距離計算
+    dist=(left_dist+right_dist)/2;
+    odo=odo+dist;
     //回転角を求める[rad]
     //回転半径を求める[mm]
     if(left_dist > right_dist)
@@ -207,21 +210,31 @@ void loop(){
 
         
   
-    Serial.print(wheel_speed * 3600/1000000,2);
-    Serial.println(" km/h");
-    Serial.print(wheel_rotation * 360 / (2 * pai),0);
-    Serial.print("deg  ");
-    Serial.print(rotation_radius/1000 ,1);
-    Serial.println("m");
+   // Serial.print(wheel_speed * 3600/1000000,2);
+   // Serial.println(" km/h");
+   // Serial.print(wheel_rotation * 360 / (2 * pai),0);
+   // Serial.print("deg  ");c
+   // Serial.print(rotation_radius/1000 ,1);
+   // Serial.println("m");
+    Serial.print(now_time);
+    Serial.print(",");
+    Serial.print(wheel_speed);
+    Serial.print(",");
+    Serial.print(odo);
+    Serial.print(",");
+    Serial.println(wheel_rotation);
+    //Serial.print(",");
+    //Serial.println(rotation_radius);
+    
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(wheel_speed * 3600/1000000,2);
     lcd.setCursor(4,0);
     lcd.print("km/h");
     lcd.setCursor(0,1);
-    lcd.print(wheel_rotation * 360/(2*pai),0);
-    lcd.setCursor(5,1);
-    lcd.print(rotation_radius/1000,1);
+    lcd.print(wheel_rotation);
+    //lcd.setCursor(5,1);
+    //lcd.print(rotation_radius/1000,1);
     before_time = now_time;
     cnt_left = 0;
     cnt_right = 0;  
