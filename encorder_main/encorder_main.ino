@@ -2,8 +2,8 @@
 
 #define DI_WHEEL_LEFT_A 14
 #define DI_WHEEL_LEFT_B 15
-#define DI_WHEEL_RIGHT_A 16
-#define DI_WHEEL_RIGHT_B 17
+#define DI_WHEEL_RIGHT_A 17
+#define DI_WHEEL_RIGHT_B 16
 #define DI_BTN_ZERO_CLEAR 18
 
 #define DO_LED_STAT 13
