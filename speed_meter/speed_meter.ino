@@ -39,6 +39,7 @@ long cnt_left, cnt_right;
 long now_time, before_time;
 double left_dist,right_dist,dist,odo;  //片輪の移動距離
 double wheel_speed_left,wheel_speed_right,wheel_speed;  //片輪の速度/中心の速度
+double wheel_count_left,wheel_count_right;
 double wheel_rotation;  //回転角
 double rotation_radius; //回転半径
 
@@ -185,6 +186,10 @@ void loop(){
     wheel_speed_left = left_dist /(((float)now_time - (float)before_time)/1000);
     wheel_speed_right = right_dist /(((float)now_time - (float)before_time)/1000);
 
+    //1秒あたりの進んだカウント数
+    wheel_count_left=cnt_left/(((float)now_time - (float)before_time)/1000);
+    wheel_count_right=cnt_right/(((float)now_time - (float)before_time)/1000);
+
     //中心の速度[mm/sec]
     wheel_speed = (wheel_speed_left + wheel_speed_right) / 2;
 
@@ -218,9 +223,9 @@ void loop(){
    // Serial.println("m");
     Serial.print(now_time);
     Serial.print(",");
-    Serial.print(wheel_speed);
+    Serial.print(wheel_count_left);
     Serial.print(",");
-    Serial.print(odo);
+    Serial.print(wheel_count_right);
     Serial.print(",");
     Serial.println(wheel_rotation);
     //Serial.print(",");
@@ -228,9 +233,10 @@ void loop(){
     
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print(wheel_speed * 3600/1000000,2);
+    //lcd.print(wheel_speed * 3600/1000000,2);
+    lcd.print(wheel_count_left);
     lcd.setCursor(4,0);
-    lcd.print("km/h");
+    lcd.print(wheel_count_right);
     lcd.setCursor(0,1);
     lcd.print(wheel_rotation);
     //lcd.setCursor(5,1);
