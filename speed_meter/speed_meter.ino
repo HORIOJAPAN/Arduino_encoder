@@ -30,7 +30,7 @@ LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 String strData1;
 String strData2;
 
-long cnt_left, cnt_right;
+long cnt_left, cnt_right,cnt_sum_left,cnt_sum_right;
 
 //int enc_left, enc_right;
 // int tm_serial_out;
@@ -77,6 +77,7 @@ void setup() {
   pinMode(AI_ROTARY_ENCODER_R, INPUT);
   
   cnt_left = cnt_right = 0;
+  cnt_sum_left = cnt_sum_right = 0;
 //  tm_serial_out = 0;
 
   now_time = before_time = 0;
@@ -214,6 +215,8 @@ void loop(){
     }
 
         
+    cnt_sum_left = cnt_sum_left + cnt_left;
+    cnt_sum_right = cnt_sum_right + cnt_right;
   
    // Serial.print(wheel_speed * 3600/1000000,2);
    // Serial.println(" km/h");
@@ -227,7 +230,10 @@ void loop(){
     Serial.print(",");
     Serial.print(wheel_count_right);
     Serial.print(",");
-    Serial.println(wheel_rotation);
+    Serial.print(cun_sum_left);
+    Serial.print(",");
+    Serial.println(cun_sum_right);
+    
     //Serial.print(",");
     //Serial.println(rotation_radius);
     
@@ -238,7 +244,15 @@ void loop(){
     lcd.setCursor(4,0);
     lcd.print(wheel_count_right);
     lcd.setCursor(0,1);
-    lcd.print(wheel_rotation);
+    lcd.print("L");
+    lcd.setCursor(1,1);
+    lcd.print(cnt_sum_left);
+    lcd.setCursor(4,1);
+    lcd.print("R");
+    lcd.setCursor(5,1);
+    lcd.print(cnt_sum_right);
+    
+    
     //lcd.setCursor(5,1);
     //lcd.print(rotation_radius/1000,1);
     before_time = now_time;
