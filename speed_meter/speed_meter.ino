@@ -230,9 +230,9 @@ void loop(){
     Serial.print(",");
     Serial.print(wheel_count_right);
     Serial.print(",");
-    Serial.print(cun_sum_left);
+    Serial.print(cnt_sum_left);
     Serial.print(",");
-    Serial.println(cun_sum_right);
+    Serial.println(cnt_sum_right);
     
     //Serial.print(",");
     //Serial.println(rotation_radius);
@@ -243,13 +243,16 @@ void loop(){
     lcd.print(wheel_count_left);
     lcd.setCursor(4,0);
     lcd.print(wheel_count_right);
-    lcd.setCursor(0,1);
+
+    // 4桁目に"R","L"を表示し，（符号を含む）桁が増えると数字が上書きする
+    lcd.setCursor(3,1);
     lcd.print("L");
-    lcd.setCursor(1,1);
+    lcd.setCursor(0,1);
     lcd.print(cnt_sum_left);
-    lcd.setCursor(4,1);
+    
+    lcd.setCursor(7,1);
     lcd.print("R");
-    lcd.setCursor(5,1);
+    lcd.setCursor(4,1);
     lcd.print(cnt_sum_right);
     
     
