@@ -136,20 +136,16 @@ void amagoi() {
     }
     if ((now_time - before_time) >= 100) {
       lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("AKAGINOW");
-      before_time = now_time;
-
       // 4桁目に"R","L"を表示し，（符号を含む）桁が増えると数字が上書きする
-      lcd.setCursor(3, 1);
+      lcd.setCursor(0, 0);
       lcd.print("L");
-      lcd.setCursor(0, 1);
+      lcd.setCursor(1, 0);
       lcd.print(cnt_left);
-
-      lcd.setCursor(7, 1);
+      lcd.setCursor(0, 1);
       lcd.print("R");
-      lcd.setCursor(4, 1);
+      lcd.setCursor(1, 1);
       lcd.print(cnt_right);
+      before_time = now_time;
     }
     if (digitalRead(SWITCH_CHECK) == LOW) {
       cnt_left = 0;
