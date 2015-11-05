@@ -134,10 +134,12 @@ void amagoi() {
     } else {
       digitalWrite(DO_LED_ERR, LOW);
     }
-
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("AKAGINAW");
+    if ((now_time - before_time) >= 100) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("AKAGINOW");
+      before_time = now_time;
+    }
 
 
     // 4桁目に"R","L"を表示し，（符号を含む）桁が増えると数字が上書きする
@@ -149,7 +151,7 @@ void amagoi() {
     lcd.setCursor(7, 1);
     lcd.print("R");
     lcd.setCursor(4, 1);
-    lcd.print(cn_right);
+    lcd.print(cnt_right);
 
 
 
@@ -191,8 +193,17 @@ void setup() {
   lcd.print("set mode");
   delay(3000);
   if (digitalRead(SWITCH_CHECK) == HIGH) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("AMAGOI");
+    lcd.setCursor(0,1);
+    lcd.print("MODE");
+    delay(1000);
     amagoi();
   }
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("normal");
 }
 
 void loop() {
